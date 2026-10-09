@@ -159,6 +159,13 @@ comm -13 "$PKGS_BEFORE" "$PKGS_AFTER" | cat - "$APT_LOG" | sort -u > "$APT_LOG.t
 rm -f "$PKGS_BEFORE" "$PKGS_AFTER"
 echo "newly installed apt packages recorded in $APT_LOG ($(wc -l < "$APT_LOG") total)"
 
+# Git LFS: download the large files (driving model, UI assets, prebuilt libs, ~250 MB)
+if ! git config --global --get filter.lfs.process > /dev/null; then
+  git lfs install --skip-repo
+  touch "$HOME/.openpilot_ran_lfs_install"  # so tools/ubuntu_uninstall.sh can undo it
+fi
+(cd "$ROOT" && git lfs install --local > /dev/null && git lfs pull)
+
 # install python dependencies
 $ROOT/update_requirements.sh
 

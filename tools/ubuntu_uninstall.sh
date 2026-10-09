@@ -1,7 +1,8 @@
 #!/bin/bash
 # Undo tools/ubuntu_setup.sh: removes only the apt packages that setup newly
 # installed (recorded in ~/.openpilot_apt_installed.txt), the uv-managed Python,
-# the .venv and the ~/.bashrc / ~/.zshrc line. The openpilot checkout itself is kept.
+# the .venv, the Git LFS setup in ~/.gitconfig (if setup added it) and the
+# ~/.bashrc / ~/.zshrc line. The openpilot checkout itself is kept.
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 ROOT="$(cd $DIR/../ && pwd)"
@@ -23,11 +24,18 @@ echo "  - $(echo $PKGS | wc -w) apt packages listed in $APT_LOG"
 echo "  - $ROOT/.venv"
 echo "  - uv-managed Python $(cat $ROOT/.python-version)"
 [ -f "$HOME/.openpilot_installed_uv" ] && echo "  - uv itself (installed by openpilot setup)"
+[ -f "$HOME/.openpilot_ran_lfs_install" ] && echo "  - the Git LFS settings in ~/.gitconfig (added by openpilot setup)"
 echo "  - the openpilot_env.sh line in ~/.bashrc / ~/.zshrc"
 read -p "Continue? [y/N] " -n 1 -r
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   exit 1
+fi
+
+# before apt removes git-lfs, which this needs
+if [ -f "$HOME/.openpilot_ran_lfs_install" ]; then
+  (cd "$HOME" && git lfs uninstall) || true
+  rm -f "$HOME/.openpilot_ran_lfs_install"
 fi
 
 if [ -n "$PKGS" ]; then
