@@ -25,7 +25,7 @@ tools/ubuntu_setup.sh
 tools/mac_setup.sh
 ```
 
-Activate a shell with the Python dependencies installed (uv puts them in `.venv`):
+Activate a shell with the Python dependencies installed (uv puts them in `.venv`). Setup also adds this line to `~/.bashrc` or `~/.zshrc`, matching your login shell:
 
 ``` bash
 cd openpilot && source tools/openpilot_env.sh

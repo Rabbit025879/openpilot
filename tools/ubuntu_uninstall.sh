@@ -1,7 +1,7 @@
 #!/bin/bash
 # Undo tools/ubuntu_setup.sh: removes only the apt packages that setup newly
 # installed (recorded in ~/.openpilot_apt_installed.txt), the uv-managed Python,
-# the .venv and the ~/.bashrc line. The openpilot checkout itself is kept.
+# the .venv and the ~/.bashrc / ~/.zshrc line. The openpilot checkout itself is kept.
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 ROOT="$(cd $DIR/../ && pwd)"
@@ -23,7 +23,7 @@ echo "  - $(echo $PKGS | wc -w) apt packages listed in $APT_LOG"
 echo "  - $ROOT/.venv"
 echo "  - uv-managed Python $(cat $ROOT/.python-version)"
 [ -f "$HOME/.openpilot_installed_uv" ] && echo "  - uv itself (installed by openpilot setup)"
-echo "  - the openpilot_env.sh line in ~/.bashrc"
+echo "  - the openpilot_env.sh line in ~/.bashrc / ~/.zshrc"
 read -p "Continue? [y/N] " -n 1 -r
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -46,6 +46,8 @@ if [ -f "$HOME/.openpilot_installed_uv" ]; then
   rm -f "$HOME/.openpilot_installed_uv"
 fi
 
-sed -i '\|tools/openpilot_env.sh|d' ~/.bashrc
+for rc in ~/.bashrc ~/.zshrc; do
+  [ -f "$rc" ] && sed -i '\|tools/openpilot_env.sh|d' "$rc"
+done
 
 echo "openpilot dependencies removed. Delete $ROOT yourself if you no longer need it."

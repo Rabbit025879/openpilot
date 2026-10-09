@@ -162,14 +162,14 @@ echo "newly installed apt packages recorded in $APT_LOG ($(wc -l < "$APT_LOG") t
 # install python dependencies
 $ROOT/update_requirements.sh
 
-source ~/.bashrc
-if [ -z "$OPENPILOT_ENV" ]; then
-  printf "\nsource %s/tools/openpilot_env.sh" "$ROOT" >> ~/.bashrc
-  source ~/.bashrc
-  echo "added openpilot_env to bashrc"
+# add openpilot_env.sh to the rc file of the user's login shell (bash or zsh)
+RC_FILE="$HOME/.$(basename ${SHELL:-bash})rc"
+if ! grep -qs "tools/openpilot_env.sh" "$RC_FILE"; then
+  printf "\nsource %s/tools/openpilot_env.sh\n" "$ROOT" >> "$RC_FILE"
+  echo "added openpilot_env to $RC_FILE"
 fi
 
 echo
 echo "----   OPENPILOT SETUP DONE   ----"
 echo "Open a new shell or configure your active shell env by running:"
-echo "source ~/.bashrc"
+echo "source $RC_FILE"

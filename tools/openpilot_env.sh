@@ -1,5 +1,12 @@
 if [ -z "$OPENPILOT_ENV" ]; then
-  OPENPILOT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null && pwd )"
+  # path of this file in both bash and zsh
+  if [ -n "$BASH_VERSION" ]; then
+    _OP_ENV_FILE="${BASH_SOURCE[0]}"
+  else
+    _OP_ENV_FILE="${(%):-%x}"
+  fi
+  OPENPILOT_ROOT="$( cd "$( dirname "$_OP_ENV_FILE" )/.." >/dev/null && pwd )"
+  unset _OP_ENV_FILE
   export PATH="$HOME/.local/bin:$PATH"
 
   if [[ "$(uname)" == 'Darwin' ]]; then
