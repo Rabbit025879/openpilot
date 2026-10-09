@@ -1,0 +1,3 @@
+# Applied when uv builds packages from source (sdists).
+# These 2022-era packages don't compile with Cython 3.
+cython<3

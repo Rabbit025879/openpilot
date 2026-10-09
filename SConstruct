@@ -186,6 +186,7 @@ env = Environment(
     "-Wno-c99-designator",
     "-Wno-reorder-init-list",
     "-Wno-error=unused-but-set-variable",
+    "-Wno-vla-cxx-extension",  # clang 18 (Ubuntu 24.04)
   ] + cflags + ccflags,
 
   CPPPATH=cpppath + [

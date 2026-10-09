@@ -18,17 +18,17 @@ git submodule update --init
 Then, run the setup script:
 
 ``` bash
-# for Ubuntu 20.04 LTS
+# for Ubuntu 20.04, 22.04 or 24.04 LTS
 tools/ubuntu_setup.sh
 
 # for macOS
 tools/mac_setup.sh
 ```
 
-Activate a shell with the Python dependencies installed:
+Activate a shell with the Python dependencies installed (uv puts them in `.venv`):
 
 ``` bash
-cd openpilot && poetry shell
+cd openpilot && source tools/openpilot_env.sh
 ```
 
 Build openpilot with this command:

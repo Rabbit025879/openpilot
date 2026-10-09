@@ -17,6 +17,14 @@ if [[ ! $(id -u) -eq 0 ]]; then
   SUDO="sudo"
 fi
 
+# Ubuntu 24.04 renamed some runtime libraries (64-bit time_t transition)
+LIBGLIB="libglib2.0-0"
+LIBPNG="libpng16-16"
+if [ -f "/etc/os-release" ] && grep -q "VERSION_CODENAME=noble" /etc/os-release; then
+  LIBGLIB="libglib2.0-0t64"
+  LIBPNG="libpng16-16t64"
+fi
+
 # Install packages present in all supported versions of Ubuntu
 function install_ubuntu_common_requirements() {
   $SUDO apt-get update
@@ -52,10 +60,10 @@ function install_ubuntu_common_requirements() {
     libglew-dev \
     libgles2-mesa-dev \
     libglfw3-dev \
-    libglib2.0-0 \
+    $LIBGLIB \
     libomp-dev \
     libopencv-dev \
-    libpng16-16 \
+    $LIBPNG \
     libportaudio2 \
     libssl-dev \
     libsqlite3-dev \
@@ -109,6 +117,9 @@ if [ -f "/etc/os-release" ]; then
   source /etc/os-release
   case "$VERSION_CODENAME" in
     "jammy")
+      install_ubuntu_lts_latest_requirements
+      ;;
+    "noble")
       install_ubuntu_lts_latest_requirements
       ;;
     "kinetic")

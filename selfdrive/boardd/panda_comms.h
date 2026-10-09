@@ -3,6 +3,7 @@
 #include <mutex>
 #include <atomic>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #ifndef __APPLE__
