@@ -31,6 +31,8 @@ Activate a shell with the Python dependencies installed (uv puts them in `.venv`
 cd openpilot && source tools/openpilot_env.sh
 ```
 
+To undo the setup later, `tools/ubuntu_uninstall.sh` removes only the apt packages that `ubuntu_setup.sh` newly installed (recorded in `~/.openpilot_apt_installed.txt`), plus the `.venv`, the uv-managed Python and the `~/.bashrc` line.
+
 Build openpilot with this command:
 ``` bash
 scons -u -j$(nproc)

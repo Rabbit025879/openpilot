@@ -9,6 +9,7 @@ cd $DIR
 if ! command -v "uv" > /dev/null 2>&1; then
   echo "uv install ..."
   curl -LsSf https://astral.sh/uv/install.sh | sh
+  touch "$HOME/.openpilot_installed_uv"  # so tools/ubuntu_uninstall.sh knows it can remove uv
   export PATH="$HOME/.local/bin:$PATH"
 fi
 

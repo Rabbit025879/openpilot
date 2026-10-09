@@ -112,6 +112,12 @@ function install_ubuntu_focal_requirements() {
     python-dev
 }
 
+# Record which apt packages (including dependencies) this script newly installs,
+# so tools/ubuntu_uninstall.sh can remove exactly those and nothing else
+APT_LOG="$HOME/.openpilot_apt_installed.txt"
+PKGS_BEFORE=$(mktemp)
+dpkg-query -W -f='${db:Status-Status} ${binary:Package}\n' | awk '$1=="installed"{print $2}' | sort > "$PKGS_BEFORE"
+
 # Detect OS using /etc/os-release file
 if [ -f "/etc/os-release" ]; then
   source /etc/os-release
@@ -146,6 +152,12 @@ else
   exit 1
 fi
 
+PKGS_AFTER=$(mktemp)
+dpkg-query -W -f='${db:Status-Status} ${binary:Package}\n' | awk '$1=="installed"{print $2}' | sort > "$PKGS_AFTER"
+touch "$APT_LOG"
+comm -13 "$PKGS_BEFORE" "$PKGS_AFTER" | cat - "$APT_LOG" | sort -u > "$APT_LOG.tmp" && mv "$APT_LOG.tmp" "$APT_LOG"
+rm -f "$PKGS_BEFORE" "$PKGS_AFTER"
+echo "newly installed apt packages recorded in $APT_LOG ($(wc -l < "$APT_LOG") total)"
 
 # install python dependencies
 $ROOT/update_requirements.sh
