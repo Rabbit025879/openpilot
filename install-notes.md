@@ -9,10 +9,7 @@ Tested on Ubuntu 24.04.5, gcc 13.3, clang 18, uv 0.11.
 git clone -b v0.9.1-ubuntu24-uv https://github.com/Rabbit025879/openpilot.git
 cd openpilot
 git submodule update --init
-sudo apt install git-lfs          # needed before the next line; setup installs it too, but runs later
-git lfs install                   # one-time: enables Git LFS for your user
-git lfs pull                      # downloads the large files (models, images, prebuilt libs, ~250 MB)
-tools/ubuntu_setup.sh             # apt packages + uv + Python 3.8.10 + .venv
+tools/ubuntu_setup.sh             # apt packages (incl. git-lfs) + Git LFS files (~250 MB) + uv + Python 3.8.10 + .venv
 source ~/.zshrc                   # or ~/.bashrc; setup writes to the rc file of your login shell
 scons -u -j$(nproc)
 ```
@@ -67,7 +64,7 @@ tools/ubuntu_uninstall.sh   # asks before removing; apt shows the exact list fir
 rm -rf ~/openpilot          # if you no longer need the code
 ```
 
-It removes the recorded apt packages, `.venv`, the uv-managed Python 3.8.10, uv itself only if setup installed it, and the `~/.bashrc` / `~/.zshrc` line. Packages that apt upgraded during setup stay at the newer version.
+It removes the recorded apt packages (git-lfs too, if setup installed it), the Git LFS settings in `~/.gitconfig` if setup added them, `.venv`, the uv-managed Python 3.8.10, uv itself only if setup installed it, and the `~/.bashrc` / `~/.zshrc` line. Packages that apt upgraded during setup stay at the newer version.
 
 ## What I changed from v0.9.1
 
@@ -86,6 +83,7 @@ It removes the recorded apt packages, `.venv`, the uv-managed Python 3.8.10, uv 
 | `selfdrive/boardd/panda.h`, `panda_comms.h` | `#include <string>` | See error 5 |
 | `tools/ubuntu_setup.sh` | Records newly installed apt packages in `~/.openpilot_apt_installed.txt` | Clean uninstall |
 | `tools/ubuntu_uninstall.sh` (new) | Removes exactly what setup added | Clean uninstall |
+| `tools/ubuntu_setup.sh`, `ubuntu_uninstall.sh` | Setup runs `git lfs install` (only if not already set up) and `git lfs pull`; uninstall undoes `git lfs install` | git-lfs is recorded like other apt packages; no manual LFS steps |
 | `requirements.txt` | Removed `shellingham` | Only poetry used it; 1.5.0 is yanked on PyPI |
 | `tools/ubuntu_setup.sh` | Writes the `openpilot_env.sh` line to `~/.zshrc` or `~/.bashrc` depending on your login shell; no duplicates on re-run | zsh support |
 | `tools/openpilot_env.sh` | Works in bash and zsh; re-activates `.venv` every time it's sourced | zsh support; re-sourcing `~/.zshrc` used to drop out of the venv |
