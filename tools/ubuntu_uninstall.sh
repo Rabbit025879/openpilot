@@ -32,8 +32,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
   exit 1
 fi
 
-# before apt removes git-lfs, which this needs
-if [ -f "$HOME/.openpilot_ran_lfs_install" ]; then
+# before apt removes git-lfs, which this needs. Also when git-lfs itself is
+# being removed: LFS settings left in ~/.gitconfig without the git-lfs binary
+# make every later clone of an LFS repo fail ("git-lfs: not found")
+if [ -f "$HOME/.openpilot_ran_lfs_install" ] || [[ " $PKGS " == *" git-lfs "* ]]; then
   (cd "$HOME" && git lfs uninstall) || true
   rm -f "$HOME/.openpilot_ran_lfs_install"
 fi
