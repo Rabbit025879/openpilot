@@ -169,11 +169,13 @@ fi
 # install python dependencies
 $ROOT/update_requirements.sh
 
-# add openpilot_env.sh to the rc file of the user's login shell (bash or zsh)
+# add openpilot_autoenv.sh to the rc file of the user's login shell (bash or zsh):
+# the venv is then active only inside this openpilot folder
 RC_FILE="$HOME/.$(basename ${SHELL:-bash})rc"
-if ! grep -qs "tools/openpilot_env.sh" "$RC_FILE"; then
-  printf "\nsource %s/tools/openpilot_env.sh\n" "$ROOT" >> "$RC_FILE"
-  echo "added openpilot_env to $RC_FILE"
+sed -i '\|tools/openpilot_env.sh|d' "$RC_FILE" 2>/dev/null || true  # older setups activated it in every shell
+if ! grep -qs "tools/openpilot_autoenv.sh" "$RC_FILE"; then
+  printf "\nsource %s/tools/openpilot_autoenv.sh\n" "$ROOT" >> "$RC_FILE"
+  echo "added openpilot_autoenv to $RC_FILE"
 fi
 
 echo

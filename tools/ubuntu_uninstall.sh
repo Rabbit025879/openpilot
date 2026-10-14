@@ -25,7 +25,7 @@ echo "  - $ROOT/.venv"
 echo "  - uv-managed Python $(cat $ROOT/.python-version)"
 [ -f "$HOME/.openpilot_installed_uv" ] && echo "  - uv itself (installed by openpilot setup)"
 [ -f "$HOME/.openpilot_ran_lfs_install" ] && echo "  - the Git LFS settings in ~/.gitconfig (added by openpilot setup)"
-echo "  - the openpilot_env.sh line in ~/.bashrc / ~/.zshrc"
+echo "  - the openpilot line in ~/.bashrc / ~/.zshrc"
 read -p "Continue? [y/N] " -n 1 -r
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -55,7 +55,7 @@ if [ -f "$HOME/.openpilot_installed_uv" ]; then
 fi
 
 for rc in ~/.bashrc ~/.zshrc; do
-  [ -f "$rc" ] && sed -i '\|tools/openpilot_env.sh|d' "$rc"
+  [ -f "$rc" ] && sed -i -e '\|tools/openpilot_env.sh|d' -e '\|tools/openpilot_autoenv.sh|d' "$rc"
 done
 
 echo "openpilot dependencies removed. Delete $ROOT yourself if you no longer need it."

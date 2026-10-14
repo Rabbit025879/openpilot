@@ -20,7 +20,7 @@ Then copy the course data (only step needed from tools092, see below):
 cp -r /path/to/tools092/replay/dataC tools/replay/
 ```
 
-`tools/openpilot_env.sh` activates `.venv` and sets `PYTHONPATH`. It replaces `poetry shell`.
+`tools/openpilot_env.sh` activates `.venv` and sets `PYTHONPATH`. It replaces `poetry shell`. Setup adds `tools/openpilot_autoenv.sh` to your rc file, which runs it automatically when you `cd` into the openpilot folder and deactivates the venv when you leave. Other terminals keep your normal Python.
 
 ## Run the UI with replay
 
@@ -87,6 +87,7 @@ It removes the recorded apt packages (git-lfs too, if setup installed it), the G
 | `requirements.txt` | Removed `shellingham` | Only poetry used it; 1.5.0 is yanked on PyPI |
 | `tools/ubuntu_setup.sh` | Writes the `openpilot_env.sh` line to `~/.zshrc` or `~/.bashrc` depending on your login shell; no duplicates on re-run | zsh support |
 | `tools/openpilot_env.sh` | Works in bash and zsh; re-activates `.venv` every time it's sourced | zsh support; re-sourcing `~/.zshrc` used to drop out of the venv |
+| `tools/openpilot_autoenv.sh` (new), `ubuntu_setup.sh`, `ubuntu_uninstall.sh` | rc file sources the autoenv hook instead of `openpilot_env.sh`; setup replaces an old `openpilot_env.sh` line | Venv only inside the openpilot folder, not in every terminal |
 | `tools/replay/*JLL.*`, `SConscript`, `.gitignore` | Added course replayJLL; ignore `replayJLL` binary and `dataC/` | See "tools092" above |
 | `tools/README.md`, `.gitignore` | Docs for 24.04 and uv; ignore `.venv/` | |
 
