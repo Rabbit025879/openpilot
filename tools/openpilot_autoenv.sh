@@ -3,16 +3,18 @@
 # current directory is inside this openpilot checkout, and deactivates it on
 # leaving. Other directories keep your normal Python.
 
-# path of this file in both bash and zsh
+# openpilot root from the path of this file, in both bash and zsh. zsh uses
+# path modifiers instead of `cd`, which would run the chpwd hook below and
+# recurse until zsh crashes
 if [ -n "$BASH_VERSION" ]; then
-  _OP_AUTOENV_FILE="${BASH_SOURCE[0]}"
+  _OP_AUTOENV_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null && pwd )"
 else
-  _OP_AUTOENV_FILE="${(%):-%x}"
+  _OP_AUTOENV_ROOT="${${(%):-%x}:A:h:h}"
 fi
-_OP_AUTOENV_ROOT="$( cd "$( dirname "$_OP_AUTOENV_FILE" )/.." >/dev/null && pwd )"
-unset _OP_AUTOENV_FILE
 
 _openpilot_autoenv() {
+  [ -n "$_OP_AUTOENV_RUNNING" ] && return 0
+  _OP_AUTOENV_RUNNING=1
   case "$PWD/" in
     "$_OP_AUTOENV_ROOT"/*)
       # (re)activate if the venv isn't on PATH, e.g. after `source ~/.zshrc`
@@ -31,6 +33,7 @@ _openpilot_autoenv() {
       unset OPENPILOT_ENV
       ;;
   esac
+  unset _OP_AUTOENV_RUNNING
 }
 
 if [ -n "$ZSH_VERSION" ]; then

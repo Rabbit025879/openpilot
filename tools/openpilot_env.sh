@@ -1,14 +1,13 @@
 # Safe to source repeatedly (e.g. `source ~/.zshrc` again): every run
 # re-activates the venv, in case the rc file reset PATH before this line.
 
-# path of this file in both bash and zsh
+# openpilot root from the path of this file, in both bash and zsh (zsh without
+# `cd`, so a chpwd hook such as openpilot_autoenv.sh's isn't triggered)
 if [ -n "$BASH_VERSION" ]; then
-  _OP_ENV_FILE="${BASH_SOURCE[0]}"
+  OPENPILOT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null && pwd )"
 else
-  _OP_ENV_FILE="${(%):-%x}"
+  OPENPILOT_ROOT="${${(%):-%x}:A:h:h}"
 fi
-OPENPILOT_ROOT="$( cd "$( dirname "$_OP_ENV_FILE" )/.." >/dev/null && pwd )"
-unset _OP_ENV_FILE
 
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;;
