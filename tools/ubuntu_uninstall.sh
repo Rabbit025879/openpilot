@@ -2,7 +2,8 @@
 # Undo tools/ubuntu_setup.sh: removes only the apt packages that setup newly
 # installed (recorded in ~/.openpilot_apt_installed.txt), the uv-managed Python,
 # the .venv, the Git LFS setup in ~/.gitconfig (if setup added it) and the
-# ~/.bashrc / ~/.zshrc line. The openpilot checkout itself is kept.
+# ~/.bashrc / ~/.zshrc line, and (after a separate prompt) ~/.comma, openpilot's
+# runtime data. The openpilot checkout itself is kept.
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 ROOT="$(cd $DIR/../ && pwd)"
@@ -26,6 +27,7 @@ echo "  - uv-managed Python $(cat $ROOT/.python-version)"
 [ -f "$HOME/.openpilot_installed_uv" ] && echo "  - uv itself (installed by openpilot setup)"
 [ -f "$HOME/.openpilot_ran_lfs_install" ] && echo "  - the Git LFS settings in ~/.gitconfig (added by openpilot setup)"
 echo "  - the openpilot line in ~/.bashrc / ~/.zshrc"
+[ -d "$HOME/.comma" ] && echo "  - $HOME/.comma (openpilot's runtime data; asked separately below)"
 read -p "Continue? [y/N] " -n 1 -r
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -57,5 +59,20 @@ fi
 for rc in ~/.bashrc ~/.zshrc; do
   [ -f "$rc" ] && sed -i -e '\|tools/openpilot_env.sh|d' -e '\|tools/openpilot_autoenv.sh|d' "$rc"
 done
+
+# ~/.comma holds what openpilot wrote at runtime: params, logs, recorded drives
+# (media/), persist/ (device keys) and auth.json, so it gets its own prompt
+if [ -d "$HOME/.comma" ]; then
+  echo ""
+  echo "$HOME/.comma ($(du -sh "$HOME/.comma" 2>/dev/null | cut -f1)) contains openpilot's params, logs, recorded drives and login."
+  read -p "Delete $HOME/.comma too? [y/N] " -n 1 -r
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf "$HOME/.comma"
+    echo "Removed $HOME/.comma"
+  else
+    echo "Kept $HOME/.comma"
+  fi
+fi
 
 echo "openpilot dependencies removed. Delete $ROOT yourself if you no longer need it."
